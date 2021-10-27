@@ -13,14 +13,34 @@
 ### https://jinmay.github.io/2019/11/23/python/python-class-first/
 
 ### https://www.daleseo.com/python-property/
-
+import os
 class Student:
-    def __init__(self):
-        # 학생 한줄씩 만드는 거야
+    def __init__(self, info):
+        infos=info.split('\t')
+        self.studentid=infos[0]
+        self.name=infos[1]
+        self.mid=info[2]
+        self.final=info[3][:-1]
+        self.avg=(int(self.mid)+int(self.final))/2
+        self.grade='A' # 성적 처리 어떻게 할 거니?
+    @property
+    def infos(self):
         pass
+
+
 class Database:
     def __init__(self, filename='Student.txt'):
-        pass
+        students=[]
+        self.filename=filename
+        # 파일명이 안주어졌을 때도 핸들링하나?
+        if not os.path.isfile(filename):
+            print('기본 파일인 \'Student.txt\'를 엽니다')
+            # 파일 열고 한 줄씩 읽으면서 각각 Student 생성해주기
+        else:
+            fr=open(self.filename)
+            for line in fr:
+                students.append(Student(line))
+            fr.close()
 
     def show(self):
         pass
@@ -35,6 +55,7 @@ class Database:
         pass
 
     def add(self):
+        # student 객체 생성하기
         pass
 
     def remove(self):
@@ -45,14 +66,22 @@ class Database:
         pass
 
 
-
-
 def main():
-   while True:
-       command=input('command: ')
-       if command=='quit':
-           break
-
+    filename = input('Filename : ')
+    db = Database(filename)
+    while True:
+        comm = input('')
+        if comm == 'quit' :
+            db.quit()
+        elif comm == 'show':
+            db.show()
+#  filename=input('Filename: ')
+#
+#
+# while True :
+#     comm = input('')
+#     if comm == 'quit' :
+#     else comm == 'show'
 
 
 main()
