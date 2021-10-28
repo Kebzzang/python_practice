@@ -14,74 +14,100 @@
 
 ### https://www.daleseo.com/python-property/
 import os
+
+
 class Student:
+    # 학생 정보 수정하는 거 있어야 함
+    # mid 와 final
     def __init__(self, info):
-        infos=info.split('\t')
-        self.studentid=infos[0]
-        self.name=infos[1]
-        self.mid=info[2]
-        self.final=info[3][:-1]
-        self.avg=(int(self.mid)+int(self.final))/2
-        self.grade='A' # 성적 처리 어떻게 할 거니?
-    @property
-    def infos(self):
-        pass
+        infos = info.split('\t')
+        print(infos)
+        self.studentid = infos[0]
+        self.name = infos[1]
+        self.mid = infos[2]
+        self.final = infos[3][:-1]
+        self.avg = (int(self.mid) + int(self.final)) / 2
+        self.grading(self.avg)
+
+    def __str__(self):
+        return "{}\t\t{}\t\t{}\t\t{}\t\t{}\t\t{}".format(self.studentid, self.name, self.mid, self.final, self.avg, self.grade)
+
+    def grading(self, avg):
+        if avg > 90:
+            self.grade = 'A'
+        elif avg > 80:
+            self.grade = 'B'
+        elif avg > 70:
+            self.grade = 'C'
+        elif avg>60:
+            self.grade='D'
+        else:
+            self.grade='F'
 
 
 class Database:
-    def __init__(self, filename='Student.txt'):
-        students=[]
-        self.filename=filename
-        # 파일명이 안주어졌을 때도 핸들링하나?
-        if not os.path.isfile(filename):
-            print('기본 파일인 \'Student.txt\'를 엽니다')
-            # 파일 열고 한 줄씩 읽으면서 각각 Student 생성해주기
+    def __init__(self, filename):
+        self.students = []
+        print('Here is file name', filename)
+
+        # 아무것도 입력안한채로 넘어왔을 때
+        if filename == '':
+            print("here1")
+            self.filename = "students.txt"
+        # 파일명이 넘어왔으면
         else:
-            fr=open(self.filename)
-            for line in fr:
-                students.append(Student(line))
-            fr.close()
+            print("Here2")
+            self.filename = filename
+
+        fr = open(filename, 'r')
+
+        for line in fr:
+            st = Student(line)
+            self.students.append(st)
+        fr.close()
+        self.show()
 
     def show(self):
-        pass
+        print(self.students)
+
 
     def search(self):
-        pass
+        print("SEARCH")
 
     def changescore(self):
-        pass
+        print("CHANGESCORE")
 
     def searchgrade(self):
-        pass
+        print("SEARCHGRADE")
 
     def add(self):
         # student 객체 생성하기
-        pass
+        print("ADD")
 
     def remove(self):
-        pass
+        print("REMOVE")
 
     def quit(self):
         # 끝내기
-        pass
+        print('Quit Here')
 
 
 def main():
     filename = input('Filename : ')
     db = Database(filename)
     while True:
-        comm = input('')
-        if comm == 'quit' :
+        comm = str.lower(input('명령어를 입력하세요: '))
+        if comm == 'quit':
             db.quit()
+            break
         elif comm == 'show':
             db.show()
-#  filename=input('Filename: ')
-#
-#
-# while True :
-#     comm = input('')
-#     if comm == 'quit' :
-#     else comm == 'show'
+        elif comm == 'search':
+            db.search()
+        elif comm == 'remove':
+            db.remove()
+        else:  # 커맨드가 이상하면??
+            print('***명령어는 show, search, remove 입니다.***')
 
 
 main()
