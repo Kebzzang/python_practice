@@ -13,16 +13,24 @@
 ### https://jinmay.github.io/2019/11/23/python/python-class-first/
 
 ### https://www.daleseo.com/python-property/
-import os
+import sys
 
 
+# 데이터베이스는 학생들을 가진다.
+# has-a 관계 : belongs to 관계
+# 객체가 한 객체의 필드로써 존재한다
+
+
+# 학생 클래스
 class Student:
     # 학생 정보 수정하는 거 있어야 함
-    # mid 와 final
+    # mid 와 final 계산하고,
     def __init__(self, info):
+        print(info)
+        self.grade = 'F'
         infos = info.split('\t')
         print(infos)
-        self.studentid = infos[0]
+        self.id = infos[0]
         self.name = infos[1]
         self.mid = infos[2]
         self.final = infos[3][:-1]
@@ -30,52 +38,90 @@ class Student:
         self.grading(self.avg)
 
     def __str__(self):
-        return "{}\t\t{}\t\t{}\t\t{}\t\t{}\t\t{}".format(self.studentid, self.name, self.mid, self.final, self.avg, self.grade)
+        return "{:10}\t{:>13}\t{:^8}\t{:^6}\t{:^7.1f}\t\t{:^6}".format(self.id,
+                                                                       self.name,
+                                                                       self.mid,
+                                                                       self.final,
+                                                                       self.avg,
+                                                                       self.grade)
 
+    # 알파벳 성적 부여
     def grading(self, avg):
-        if avg > 90:
+        if avg >= 90:
             self.grade = 'A'
-        elif avg > 80:
+        elif avg >= 80:
             self.grade = 'B'
-        elif avg > 70:
+        elif avg >= 70:
             self.grade = 'C'
-        elif avg>60:
-            self.grade='D'
-        else:
-            self.grade='F'
+        elif avg >= 60:
+            self.grade = 'D'
+
+    @property
+    def mid(self):
+        return self.mid
+
+    @mid.setter
+    def mid(self, mid):
+        self.mid = mid
+
+    @property
+    def final(self):
+        return self.final
+
+    @final.setter
+    def final(self, final):
+        self.final = final
 
 
+# 데이터베이스 클래
 class Database:
     def __init__(self, filename):
         self.students = []
-        print('Here is file name', filename)
-
-        # 아무것도 입력안한채로 넘어왔을 때
-        if filename == '':
-            print("here1")
-            self.filename = "students.txt"
-        # 파일명이 넘어왔으면
-        else:
-            print("Here2")
-            self.filename = filename
-
+        self.filename = filename
         fr = open(filename, 'r')
-
+        # 파일 read 하고 닫아주기
         for line in fr:
-            st = Student(line)
-            self.students.append(st)
+            self.students.append(Student(line))
         fr.close()
         self.show()
 
     def show(self):
-        print(self.students)
+        print(
+            "{:10}\t{:>13}\t{:8}\t{:>5}\t{:>7}\t\t{:>5}\n--------------------------------------------------------------------------------".format(
+                "Student",
+                "Name",
+                "Mideterm",
+                "Final",
+                "Average",
+                "Grade"))
+        # 저장된 student 객체들을 학생의 평균에 따라 정렬한 뒤 출력한다
+        self.students.sort(key=lambda st: -st.avg)
+        # 만약 파일에 학생 정보가 존재하지 않는다면 학생이 없다고 알려줌
 
+        for student in self.students:
+            print(student)
+        print()
 
     def search(self):
-        print("SEARCH")
+        st = input("Student ID:")
+        result = "NO SUCH PERSON"
+        for student in self.students:
+            if student.id == st:
+                result = "{:10}\t{:>13}\t{:8}\t{:>5}\t{:>7}\t\t{:>5}\n--------------------------------------------------------------------------------\n".format(
+                    "Student",
+                    "Name",
+                    "Mideterm",
+                    "Final",
+                    "Average",
+                    "Grade") + str(student)
+
+        print(result)
+        print()
 
     def changescore(self):
-        print("CHANGESCORE")
+        st = input('Student ID: ')
+        for student in self.students:
+            print(student)
 
     def searchgrade(self):
         print("SEARCHGRADE")
@@ -93,7 +139,12 @@ class Database:
 
 
 def main():
-    filename = input('Filename : ')
+    # 일단
+    filename = "students.txt"
+    # 사용자가 파일 이름도 같이 입력을 해줬다면, 넘어오는
+    if len(sys.argv) == 2:
+        filename = sys.argv[1]
+    print(filename)
     db = Database(filename)
     while True:
         comm = str.lower(input('명령어를 입력하세요: '))
@@ -107,9 +158,9 @@ def main():
         elif comm == 'remove':
             db.remove()
         else:  # 커맨드가 이상하면??
-            print('***명령어는 show, search, remove 입니다.***')
+            print('***명령어는 show, search, changescore, remove, searchgrade, quit 입니다.***')
 
 
 main()
 
-## 클래스로 만들라고?!
+# 클래스로 만들라고?!
